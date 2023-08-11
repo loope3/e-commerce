@@ -5,12 +5,8 @@ import jakarta.validation.constraints.NotNull;
 
 public class LoginBody {
 
-  @NotNull
-  @NotBlank
   private String username;
 
-  @NotNull
-  @NotBlank
   private String password;
 
   public String getUsername() {
