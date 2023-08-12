@@ -1,10 +1,8 @@
 package com.store.backend.api.model;
 
-import lombok.Builder;
-import lombok.Getter;
+import org.springframework.stereotype.Component;
 
-@Getter
-@Builder
+@Component
 public class LoginResponse {
 	private String jwt;
 	

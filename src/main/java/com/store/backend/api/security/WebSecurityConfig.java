@@ -2,6 +2,8 @@ package com.store.backend.api.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -13,13 +15,16 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-  private final JWTRequestFilter jwtRequestFilter;
+  private final CustomPasswordEncoder passwordEncoder;
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final CustomUserDetailsService customUserDetailsService;
   
 
-  public WebSecurityConfig(JWTRequestFilter jwtRequestFilter, JwtAuthenticationFilter jwtAuthenticationFilter) {
-    this.jwtRequestFilter = jwtRequestFilter;
+  public WebSecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, CustomUserDetailsService customUserDetailsService,
+		  					CustomPasswordEncoder passwordEncoder) {
     this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    this.customUserDetailsService = customUserDetailsService;
+    this.passwordEncoder = passwordEncoder;
   }
   
   @Bean
@@ -39,6 +44,17 @@ public class WebSecurityConfig {
     		 .anyRequest().authenticated()
      );
     return http.build();
+  }
+  
+  
+  @Bean
+  public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+	  var builder = http.getSharedObject(AuthenticationManagerBuilder.class);
+	 builder.userDetailsService(customUserDetailsService)
+	        .passwordEncoder(passwordEncoder.passwordEncoder());
+
+	  return builder.build();
+	  
   }
 
 }
